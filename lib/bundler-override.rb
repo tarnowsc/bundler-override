@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require "set"
 require_relative "bundler/override/dsl_patch"
 require_relative "bundler/override/specset_patch"
 require_relative "bundler/override/sharedhelpers_patch"
