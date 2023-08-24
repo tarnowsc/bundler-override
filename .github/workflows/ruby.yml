@@ -17,28 +17,33 @@ permissions:
   contents: read
 
 jobs:
-  test:
-
+  ci:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        ruby-version: ['3.2']
+        ruby-version:
+          - '3.0.6'
+          - '3.2'
+        bundler-version:
+          - '2.2.33'
+          - '2.4.14'
 
+    env:
+      TEST_BUNDLER_VERSION: ${{ matrix.bundler-version }}
+      CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Ruby
-    # To automatically get bug fixes and new Ruby versions for ruby/setup-ruby,
-    # change this to (see https://github.com/ruby/setup-ruby#versioning):
-    # uses: ruby/setup-ruby@v1
-      uses: ruby/setup-ruby@55283cc23133118229fd3f97f9336ee23a179fcf # v1.146.0
-      with:
-        ruby-version: ${{ matrix.ruby-version }}
-        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-    - name: Install Bundler 2.4.14
-      run: gem install bundler -v 2.4.14
-    - name: Bundle Install
-      run: bundle install
-    - name: coverage dir
-      run: mkdir coverage
-    - name: Run tests
-      run: bundle exec rake
+      - uses: actions/checkout@v3
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler: ${{ matrix.bundler-version }}
+          bundler-cache: true
+        timeout-minutes: 30
+      - name: Run tests
+        run: bundle exec rake
+      - name: Report code coverage
+        if: ${{ github.ref == 'refs/heads/master' && matrix.ruby-version == '3.2' && matrix.bundler-version == '2.4' }}
+        continue-on-error: true
+        uses: paambaati/codeclimate-action@v5
