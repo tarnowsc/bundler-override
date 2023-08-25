@@ -1,3 +1,5 @@
+require "set"
+
 module Bundler
   module Override
     module SpecSetPatch
