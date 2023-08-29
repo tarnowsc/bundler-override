@@ -3,36 +3,32 @@
 This [bundler plugin](https://bundler.io/guides/bundler_plugins.html) allows to change dependencies for a gem.
 It can be helpful in situation when a developer needs to use some other dependency than default for the gem.
 
+## Requirements
+
+_Ruby_ 3.2 and _Bundler_ 2.4.14 are mostly tested versions.
+
 ## Installation
 
-1. Clone this project to your disk
+1. Clone this project to your disk.
 
-2. Run in the terminal
+2. Install plugin from local git folder
 
-~~~shell
-gem install bundler -v 2.4.14
-~~~
+Set proper path in place of _'PATH-TO-THE-FOLDER-WITH-PLUGIN'_ and run from terminal in your project folder:
 
-3. Install plugin from local git folder
-
-Set proper path in place of 'PATH-TO-THE-FOLDER-WITH-PLUGIN' and run in your project folder:
-
-~~~shell
+~~~console
 bundle plugin install "bundler-override" --local-git PATH-TO-THE-FOLDER-WITH-PLUGIN/bundler-override/
 ~~~
 
-
-
 ## Usage
 
-1. Add to the Gemfile in your project:
+1. Add plugin entry to the _Gemfile_ in your project:
 
 ~~~ruby
 plugin 'bundler-override'
 require File.join(Bundler::Plugin.index.load_paths("bundler-override")[0], "bundler-override") rescue nil
 ~~~
 
-2. In the Gemfile add 'override' block, e.g.:
+2. Add _'override'_ block to the _Gemfile_, e.g.:
 
 ~~~ruby
 override 'chef-config', :drop => 'chef-utils', :requirements => {
@@ -48,6 +44,18 @@ override 'chef-config', :drop => ['chef-utils', 'mixlib-config'], :requirements 
   'mixlib-config' => '2.0.0'
 }
 ~~~
+
+### override
+
+`override` is a command that allows to replace dependency for a gem with desired version
+
+### drop
+
+Takes a gem name or list of gem names to be replaced.
+
+### requirements
+
+A map with gem versions to be used instead of the ones from _drop_.
 
 ## License
 
