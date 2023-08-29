@@ -1,39 +1,55 @@
-# BundlerOverride
+# bundler-override
 
-TODO: Delete this and the text below, and describe your gem
-
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/bundler-override`. To experiment with that code, run `bin/console` for an interactive prompt.
+This [bundler plugin](https://bundler.io/guides/bundler_plugins.html) allows to change dependencies for a gem.
+It can be helpful in situation when a developer needs to use some other dependency than default for the gem.
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
+1. Clone this project to your disk
 
-Install the gem and add to the application's Gemfile by executing:
+2. Run in the terminal
 
-    $ bundle add UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
+~~~shell
+gem install bundler -v 2.4.14
+~~~
 
-If bundler is not being used to manage dependencies, install the gem by executing:
+3. Install plugin from local git folder
 
-    $ gem install UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
+Set proper path in place of 'PATH-TO-THE-FOLDER-WITH-PLUGIN' and run in your project folder:
+
+~~~shell
+bundle plugin install "bundler-override" --local-git PATH-TO-THE-FOLDER-WITH-PLUGIN/bundler-override/
+~~~
+
+
 
 ## Usage
 
-TODO: Write usage instructions here
+1. Add to the Gemfile in your project:
 
-## Development
+~~~ruby
+plugin 'bundler-override'
+require File.join(Bundler::Plugin.index.load_paths("bundler-override")[0], "bundler-override") rescue nil
+~~~
 
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+2. In the Gemfile add 'override' block, e.g.:
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+~~~ruby
+override 'chef-config', :drop => 'chef-utils', :requirements => {
+  'chef-utils' => '17.10.68'
+}
+~~~
 
-## Contributing
+or
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/bundler-override. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/bundler-override/blob/master/CODE_OF_CONDUCT.md).
+~~~ruby
+override 'chef-config', :drop => ['chef-utils', 'mixlib-config'], :requirements => {
+  'chef-utils' => '17.10.68',
+  'mixlib-config' => '2.0.0'
+}
+~~~
 
 ## License
 
-The gem is available as open source under the terms of the [Apache 2.0 License](https://github.com/tarnowsc/bundler-override/blob/main/LICENSE).
-
-## Code of Conduct
-
-Everyone interacting in the BundlerOverride project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/bundler-override/blob/master/CODE_OF_CONDUCT.md).
+The gem is available as open source under the terms of
+the [Apache 2.0 License](https://github.com/tarnowsc/bundler-override/blob/main/LICENSE).

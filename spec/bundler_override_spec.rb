@@ -131,7 +131,7 @@ RSpec.describe Bundler::Override do
     end
   end
 
-  context "overriding gems" do
+  context "overriding gem" do
     before do
       write_gemfile <<~G
       #{base_gemfile}
@@ -139,6 +139,41 @@ RSpec.describe Bundler::Override do
         gem 'chef-config', '~> 18.2', '>= 18.2.7'
 
         override 'chef-config', :drop => 'chef-utils', :requirements => {
+          'chef-utils' => '17.10.68'
+        }
+      G
+
+      bundle("plugin install \"bundler-override\" --local-git #{bundler_override_root}")
+    end
+
+    it "with different version" do
+      bundle(:update)
+
+      expect(lockfile_deps_for_spec("chef-config")).to include(["chef-utils", "= 17.10.68"])
+    end
+
+    it "with ENV['RAILS_ENV'] = 'production'" do
+      bundle(:update,env: { "RAILS_ENV" => "production" })
+
+      expect(lockfile_deps_for_spec("chef-config")).to include(["chef-utils", "= 17.10.68"])
+    end
+
+    it "with ENV['RAILS_ENV'] = 'production' and the Bundler::Setting false" do
+      env_var = "BUNDLE_BUNDLER_INJECT__DISABLE_WARN_OVERRIDE_GEM"
+      bundle(:update, env: { "RAILS_ENV" => "production", env_var => 'false' })
+
+      expect(lockfile_deps_for_spec("chef-config")).to include(["chef-utils", "= 17.10.68"])
+    end
+  end
+
+  context "overriding gems" do
+    before do
+      write_gemfile <<~G
+      #{base_gemfile}
+
+        gem 'chef-config', '~> 18.2', '>= 18.2.7'
+
+        override 'chef-config', :drop => ['chef-utils', 'mixlib-config'], :requirements => {
           'chef-utils' => '17.10.68',
           'mixlib-config' => '2.0.0'
         }
