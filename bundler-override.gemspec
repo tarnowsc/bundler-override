@@ -5,19 +5,19 @@ require_relative "lib/bundler/override/version"
 Gem::Specification.new do |spec|
   spec.name = "bundler-override"
   spec.version = Bundler::Override::VERSION
-  spec.authors = ["Write your name"]
-  spec.email = ["Write your email address"]
+  spec.authors = ["Cezary Tarnowski", "Tomasz Wojcik"]
+  spec.email = ["non-exiting@email.dont.use"]
 
-  spec.summary = "Write a short summary, because RubyGems requires one."
-  spec.homepage = "https://example.com"
-  spec.license = "MIT"
+  spec.summary = "This bundler plugin allows to change dependencies for a gem. It can be helpful in situation when a developer needs to use some other dependency than default for the gem."
+  spec.homepage = "https://github.com/tarnowsc/bundler-override"
+  spec.license = "Apache-2.0"
   spec.required_ruby_version = ">= 3.0.0"
 
-  spec.metadata["allowed_push_host"] = "Set to your gem server 'https://example.com'"
+  spec.metadata["allowed_push_host"] = "https://rubygems.org"
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "https://example.com"
-  spec.metadata["changelog_uri"] = "https://example.com"
+  spec.metadata["source_code_uri"] = "https://github.com/tarnowsc/bundler-override"
+  spec.metadata["changelog_uri"] = "https://github.com/tarnowsc/bundler-override/blob/main/CHANGELOG.md"
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
