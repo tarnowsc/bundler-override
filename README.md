@@ -31,7 +31,11 @@ require File.join(Bundler::Plugin.index.load_paths("bundler-override")[0], "bund
 2. Add _'override'_ block to the _Gemfile_, e.g.:
 
 ~~~ruby
-override 'chef-config', :drop => 'chef-utils', :requirements => {
+override 'chef-config', :drop => ['chef-utils', 'mixlib-config']
+~~~
+
+~~~ruby
+override 'chef-config', :drop => 'mixlib-config', :requirements => {
   'chef-utils' => '17.10.68'
 }
 ~~~
@@ -39,7 +43,7 @@ override 'chef-config', :drop => 'chef-utils', :requirements => {
 or
 
 ~~~ruby
-override 'chef-config', :drop => ['chef-utils', 'mixlib-config'], :requirements => {
+override 'chef-config', :requirements => {
   'chef-utils' => '17.10.68',
   'mixlib-config' => '2.0.0'
 }
@@ -51,11 +55,11 @@ override 'chef-config', :drop => ['chef-utils', 'mixlib-config'], :requirements 
 
 ### drop
 
-Takes a gem name or list of gem names to be replaced.
+Takes a gem name or list of gem names to be totally dropped from the dependencies.
 
 ### requirements
 
-A map with gem versions to be used instead of the ones from _drop_.
+A map with gem versions to be used instead of the ones from the original dependencies.
 
 ## License
 
