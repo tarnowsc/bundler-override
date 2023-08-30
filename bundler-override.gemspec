@@ -5,7 +5,7 @@ require_relative "lib/bundler/override/version"
 Gem::Specification.new do |spec|
   spec.name = "bundler-override"
   spec.version = Bundler::Override::VERSION
-  spec.authors = ["Cezary Tarnowski", "Tomasz Wojcik"]
+  spec.authors = ["Cezary Tarnowski", "Tomasz Wojcik", "Marek Jakubowski"]
   spec.email = ["non-exiting@email.dont.use"]
 
   spec.summary = "This bundler plugin allows to change dependencies for a gem. It can be helpful in situation when a developer needs to use some other dependency than default for the gem."
