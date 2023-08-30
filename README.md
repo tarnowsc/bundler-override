@@ -34,6 +34,8 @@ require File.join(Bundler::Plugin.index.load_paths("bundler-override")[0], "bund
 override 'chef-config', :drop => ['chef-utils', 'mixlib-config']
 ~~~
 
+or
+
 ~~~ruby
 override 'chef-config', :drop => 'mixlib-config', :requirements => {
   'chef-utils' => '17.10.68'
