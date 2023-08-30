@@ -9,6 +9,12 @@ _Ruby_ 3.2 and _Bundler_ 2.4.14 are mostly tested versions.
 
 ## Installation
 
+### For normal usage
+~~~console
+bundle plugin install "bundler-override"
+~~~
+
+### For development
 1. Clone this project to your disk.
 
 2. Install plugin from local git folder
@@ -53,7 +59,7 @@ override 'chef-config', :requirements => {
 
 ### override
 
-`override` is a command that allows to replace dependency for a gem with desired version
+`override` is a command that allows to drop or replace dependency for a gem with desired version
 
 ### drop
 
