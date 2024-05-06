@@ -227,4 +227,19 @@ RSpec.describe Bundler::Override do
                                                        ["chef-utils", "= 18.2.7"],
                                                        ["mixlib-config", "= 2.0.0"])
   end
+
+  it "drop dependency" do
+    write_gemfile <<~G
+      #{base_gemfile}
+        gem 'rails-dom-testing'
+        override 'rails-dom-testing', drop: ['nokogiri']
+      G
+
+    bundle("plugin install \"bundler-override\" --local-git #{bundler_override_root}")
+    bundle(:update)
+
+    puts lockfile_deps_for_spec("rails-dom-testing")
+    expect(lockfile_deps_for_spec("rails-dom-testing")).to_not include(
+                                                       ["nogokiri"])
+  end
 end
