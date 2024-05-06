@@ -23,13 +23,13 @@ jobs:
       fail-fast: false
       matrix:
         ruby-version:
-          - '3.0.6'
+          - '3.0'
           - '3.2'
           - '3.3'
         bundler-version:
-          - '2.2.33'
           - '2.3.19'
           - '2.4.14'
+          - '2.5.4'
 
     env:
       TEST_BUNDLER_VERSION: ${{ matrix.bundler-version }}
