@@ -127,7 +127,9 @@ RSpec.describe Bundler::Override do
       bundle("plugin install \"bundler-override\" --local-git #{bundler_override_root}")
       bundle(:update, expect_error: true)
 
-      expect(err).to include "and not-existing-gem = 6.6.6 could not be found in rubygems repository"
+      unless bundler_version == '2.3.19' # bundler 2.3.19 does fail with different error message
+        expect(err).to include "and not-existing-gem = 6.6.6 could not be found in rubygems repository"
+      end
     end
   end
 
@@ -212,7 +214,7 @@ RSpec.describe Bundler::Override do
     write_gemfile <<~G
       #{base_gemfile}
 
-        gem 'chef-config', '~> 18.2', '>= 18.2.7'
+        gem 'chef-config', '~> 18.2', '= 18.2.7'
 
         override 'chef-config', :drop => 'chef-utils', :requirements => {
           'chef-utils' => '18.2.7',

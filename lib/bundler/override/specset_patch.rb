@@ -7,9 +7,10 @@ module Bundler
       def specs_for_dependency(dep, platform)
         spec = super
         return spec if spec.empty?
-        if Bundler::Override.override? dep.name
+        name = if dep.is_a?(String) then dep else dep.name end
+        if Bundler::Override.override? name
           s = spec.first
-          param = Bundler::Override.params(dep.name)
+          param = Bundler::Override.params(name)
           drop = param[:drop]
           s.dependencies.delete_if { |d| drop.include? d.name }
           requirements = param[:requirements]

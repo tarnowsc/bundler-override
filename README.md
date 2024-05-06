@@ -5,7 +5,7 @@ It can be helpful in situation when a developer needs to use some other dependen
 
 ## Requirements
 
-_Ruby_ 3.2 and _Bundler_ 2.4.14 are mostly tested versions.
+_Ruby_ >= 3.0 and _Bundler_ >= 2.3.x are required. For detailed compatibility matrix please refer to [test pipeline versions configuration](https://github.com/tarnowsc/bundler-override/blob/main/.github/workflows/ruby.yml#L24).
 
 ## Installation
 
