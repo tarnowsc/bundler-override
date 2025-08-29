@@ -30,6 +30,10 @@ jobs:
           - '2.3.19'
           - '2.4.14'
           - '2.5.4'
+          - '2.6.0'
+        exclude:
+          - ruby-version: '3.0' # Bundler 2.6.0 requires Ruby 3.1+
+            bundler-version: '2.6.0'
 
     env:
       TEST_BUNDLER_VERSION: ${{ matrix.bundler-version }}
