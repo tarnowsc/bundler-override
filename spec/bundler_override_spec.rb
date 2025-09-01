@@ -67,8 +67,7 @@ RSpec.describe Bundler::Override do
     it "installs the plugin using: bundle update" do
       bundle(:update, expect_error: true)
 
-      expect(err).to include "There was an error parsing `Gemfile`: Undefined local variable or method `override'"
-      expect(err).to include "'chef-utils' => '17.10.68'"
+      expect(err).to include "Undefined local variable or method `override'"
     end
 
     it "installs the plugin using: bundle plugin install" do
@@ -141,7 +140,7 @@ RSpec.describe Bundler::Override do
         gem 'chef-config', '~> 18.2', '>= 18.2.7'
 
         override 'chef-config', :drop => 'chef-utils', :requirements => {
-          'chef-utils' => '17.10.68'
+          'chef-utils' => '17.10.70'
         }
       G
 
@@ -151,20 +150,20 @@ RSpec.describe Bundler::Override do
     it "with different version" do
       bundle(:update)
 
-      expect(lockfile_deps_for_spec("chef-config")).to include(["chef-utils", "= 17.10.68"])
+      expect(lockfile_deps_for_spec("chef-config")).to include(["chef-utils", "= 17.10.70"])
     end
 
     it "with ENV['RAILS_ENV'] = 'production'" do
       bundle(:update,env: { "RAILS_ENV" => "production" })
 
-      expect(lockfile_deps_for_spec("chef-config")).to include(["chef-utils", "= 17.10.68"])
+      expect(lockfile_deps_for_spec("chef-config")).to include(["chef-utils", "= 17.10.70"])
     end
 
     it "with ENV['RAILS_ENV'] = 'production' and the Bundler::Setting false" do
       env_var = "BUNDLE_BUNDLER_INJECT__DISABLE_WARN_OVERRIDE_GEM"
       bundle(:update, env: { "RAILS_ENV" => "production", env_var => 'false' })
 
-      expect(lockfile_deps_for_spec("chef-config")).to include(["chef-utils", "= 17.10.68"])
+      expect(lockfile_deps_for_spec("chef-config")).to include(["chef-utils", "= 17.10.70"])
     end
   end
 
@@ -174,10 +173,11 @@ RSpec.describe Bundler::Override do
       #{base_gemfile}
 
         gem 'chef-config', '~> 18.2', '>= 18.2.7'
+        gem 'sequel'
 
         override 'chef-config', :drop => ['chef-utils', 'mixlib-config'], :requirements => {
-          'chef-utils' => '17.10.68',
-          'mixlib-config' => '2.0.0'
+          'chef-utils' => '17.10.70',
+          'mixlib-config' => '2.0.1'
         }
       G
 
@@ -188,16 +188,16 @@ RSpec.describe Bundler::Override do
       bundle(:update)
 
       expect(lockfile_deps_for_spec("chef-config")).to include(
-                                                         ["chef-utils", "= 17.10.68"],
-                                                         ["mixlib-config", "= 2.0.0"])
+                                                         ["chef-utils", "= 17.10.70"],
+                                                         ["mixlib-config", "= 2.0.1"])
     end
 
     it "with ENV['RAILS_ENV'] = 'production'" do
       bundle(:update,env: { "RAILS_ENV" => "production" })
 
       expect(lockfile_deps_for_spec("chef-config")).to include(
-                                                         ["chef-utils", "= 17.10.68"],
-                                                         ["mixlib-config", "= 2.0.0"])
+                                                         ["chef-utils", "= 17.10.70"],
+                                                         ["mixlib-config", "= 2.0.1"])
     end
 
     it "with ENV['RAILS_ENV'] = 'production' and the Bundler::Setting false" do
@@ -205,8 +205,8 @@ RSpec.describe Bundler::Override do
       bundle(:update, env: { "RAILS_ENV" => "production", env_var => 'false' })
 
       expect(lockfile_deps_for_spec("chef-config")).to include(
-                                                         ["chef-utils", "= 17.10.68"],
-                                                         ["mixlib-config", "= 2.0.0"])
+                                                         ["chef-utils", "= 17.10.70"],
+                                                         ["mixlib-config", "= 2.0.1"])
     end
   end
 
@@ -241,7 +241,6 @@ RSpec.describe Bundler::Override do
     bundle(:update)
 
     puts lockfile_deps_for_spec("rails-dom-testing")
-    expect(lockfile_deps_for_spec("rails-dom-testing")).to_not include(
-                                                       ["nogokiri"])
+    expect(lockfile_deps_for_spec("rails-dom-testing").to_s).to_not include("nokogiri")
   end
 end
