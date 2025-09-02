@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary = "This bundler plugin allows to change dependencies for a gem. It can be helpful in situation when a developer needs to use some other dependency than default for the gem. For usage details, please see: https://github.com/tarnowsc/bundler-override#usage"
   spec.homepage = "https://github.com/tarnowsc/bundler-override"
   spec.license = "Apache-2.0"
-  spec.required_ruby_version = ">= 3.0.0"
+  spec.required_ruby_version = ">= 3.2.0"
 
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
 
