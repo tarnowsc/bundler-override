@@ -37,29 +37,40 @@ require File.join(Bundler::Plugin.index.load_paths("bundler-override")[0], "bund
 2. Add _'override'_ block to the _Gemfile_, e.g.:
 
 ~~~ruby
-override 'chef-config', :drop => ['chef-utils', 'mixlib-config']
+if Bundler::Plugin.installed?('bundler-override')
+  override 'chef-config', :drop => ['chef-utils', 'mixlib-config']
+end
 ~~~
 
 or
 
 ~~~ruby
-override 'chef-config', :drop => 'mixlib-config', :requirements => {
-  'chef-utils' => '17.10.68'
-}
+if Bundler::Plugin.installed?('bundler-override')
+  override 'chef-config', :drop => 'mixlib-config', :requirements => {
+    'chef-utils' => '17.10.68'
+  }
+end
 ~~~
 
 or
 
 ~~~ruby
-override 'chef-config', :requirements => {
-  'chef-utils' => '17.10.68',
-  'mixlib-config' => '2.0.0'
-}
+if Bundler::Plugin.installed?('bundler-override')
+  override 'chef-config', :requirements => {
+    'chef-utils' => '17.10.68',
+    'mixlib-config' => '2.0.0'
+  }
+end
 ~~~
+
+
 
 ### override
 
 `override` is a command that allows to drop or replace dependency for a gem with desired version
+
+It is a good practice to check if the plugin is installed since it will allow bundler to install it
+automatically if it is missing.
 
 ### drop
 

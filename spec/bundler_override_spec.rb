@@ -54,20 +54,20 @@ RSpec.describe Bundler::Override do
   context "on installation of the plugin - override block in Gemfile" do
     before do
       write_gemfile <<~G
-      #{base_gemfile}
+        #{base_gemfile}
 
-        gem 'chef-config', '~> 18.2', '>= 18.2.7'
-
-        override 'chef-config', :drop => 'chef-utils', :requirements => {
-          'chef-utils' => '17.10.68'
-        }
+          gem 'chef-config', '~> 18.2', '>= 18.2.7'
+          if Bundler::Plugin.installed?('bundler-override')
+            override 'chef-config', :drop => 'chef-utils', :requirements => {
+              'chef-utils' => '17.10.95'
+            }
+          end
       G
     end
 
     it "installs the plugin using: bundle update" do
-      bundle(:update, expect_error: true)
-
-      expect(err).to include "Undefined local variable or method `override'"
+      bundle(:update)
+      verify_installation
     end
 
     it "installs the plugin using: bundle plugin install" do
@@ -101,29 +101,29 @@ RSpec.describe Bundler::Override do
   context "on non existing gems" do
     it "when the gem doesn't exist" do
       write_gemfile <<~G
-      #{base_gemfile}
-
-        override 'not-existing-gem', :drop => 'chef-utils', :requirements => {
-          'chef-utils' => '17.10.68'
-        }
+        #{base_gemfile}
+          if Bundler::Plugin.installed?('bundler-override')
+            override 'not-existing-gem', :drop => 'chef-utils', :requirements => {
+              'chef-utils' => '17.10.68'
+            }
+          end
       G
 
-      bundle("plugin install \"bundler-override\" --local-git #{bundler_override_root}")
       bundle(:update)
     end
 
     it "when the gem's dependency doesn't exist in rubygems.org" do
       write_gemfile <<~G
-      #{base_gemfile}
+        #{base_gemfile}
+          gem 'chef-config', '~> 18.2', '>= 18.2.7'
 
-        gem 'chef-config', '~> 18.2', '>= 18.2.7'
-
-        override 'chef-config', :drop => 'chef-utils', :requirements => {
-          'not-existing-gem' => '6.6.6'
-        }
+          if Bundler::Plugin.installed?('bundler-override')
+            override 'chef-config', :drop => 'chef-utils', :requirements => {
+              'not-existing-gem' => '6.6.6'
+            }
+          end
       G
 
-      bundle("plugin install \"bundler-override\" --local-git #{bundler_override_root}")
       bundle(:update, expect_error: true)
 
       unless bundler_version == '2.3.19' # bundler 2.3.19 does fail with different error message
@@ -135,69 +135,69 @@ RSpec.describe Bundler::Override do
   context "overriding gem" do
     before do
       write_gemfile <<~G
-      #{base_gemfile}
+        #{base_gemfile}
 
-        gem 'chef-config', '~> 18.2', '>= 18.2.7'
+          gem 'chef-config', '~> 18.2', '>= 18.2.7'
 
-        override 'chef-config', :drop => 'chef-utils', :requirements => {
-          'chef-utils' => '17.10.70'
-        }
+          if Bundler::Plugin.installed?('bundler-override')
+            override 'chef-config', :requirements => {
+              'chef-utils' => '17.10.95'
+            }
+          end
       G
-
-      bundle("plugin install \"bundler-override\" --local-git #{bundler_override_root}")
     end
 
     it "with different version" do
       bundle(:update)
 
-      expect(lockfile_deps_for_spec("chef-config")).to include(["chef-utils", "= 17.10.70"])
+      expect(lockfile_deps_for_spec("chef-config")).to include(["chef-utils", "= 17.10.95"])
     end
 
     it "with ENV['RAILS_ENV'] = 'production'" do
       bundle(:update,env: { "RAILS_ENV" => "production" })
 
-      expect(lockfile_deps_for_spec("chef-config")).to include(["chef-utils", "= 17.10.70"])
+      expect(lockfile_deps_for_spec("chef-config")).to include(["chef-utils", "= 17.10.95"])
     end
 
     it "with ENV['RAILS_ENV'] = 'production' and the Bundler::Setting false" do
       env_var = "BUNDLE_BUNDLER_INJECT__DISABLE_WARN_OVERRIDE_GEM"
       bundle(:update, env: { "RAILS_ENV" => "production", env_var => 'false' })
 
-      expect(lockfile_deps_for_spec("chef-config")).to include(["chef-utils", "= 17.10.70"])
+      expect(lockfile_deps_for_spec("chef-config")).to include(["chef-utils", "= 17.10.95"])
     end
   end
 
   context "overriding gems" do
     before do
       write_gemfile <<~G
-      #{base_gemfile}
+        #{base_gemfile}
 
         gem 'chef-config', '~> 18.2', '>= 18.2.7'
         gem 'sequel'
 
-        override 'chef-config', :drop => ['chef-utils', 'mixlib-config'], :requirements => {
-          'chef-utils' => '17.10.70',
-          'mixlib-config' => '2.0.1'
-        }
+          if Bundler::Plugin.installed?('bundler-override')
+            override 'chef-config', :requirements => {
+              'chef-utils' => '17.10.95',
+              'mixlib-config' => '2.1.0'
+            }
+          end
       G
-
-      bundle("plugin install \"bundler-override\" --local-git #{bundler_override_root}")
     end
 
     it "with different version" do
       bundle(:update)
 
       expect(lockfile_deps_for_spec("chef-config")).to include(
-                                                         ["chef-utils", "= 17.10.70"],
-                                                         ["mixlib-config", "= 2.0.1"])
+                                                         ["chef-utils", "= 17.10.95"],
+                                                         ["mixlib-config", "= 2.1.0"])
     end
 
     it "with ENV['RAILS_ENV'] = 'production'" do
       bundle(:update,env: { "RAILS_ENV" => "production" })
 
       expect(lockfile_deps_for_spec("chef-config")).to include(
-                                                         ["chef-utils", "= 17.10.70"],
-                                                         ["mixlib-config", "= 2.0.1"])
+                                                         ["chef-utils", "= 17.10.95"],
+                                                         ["mixlib-config", "= 2.1.0"])
     end
 
     it "with ENV['RAILS_ENV'] = 'production' and the Bundler::Setting false" do
@@ -205,8 +205,8 @@ RSpec.describe Bundler::Override do
       bundle(:update, env: { "RAILS_ENV" => "production", env_var => 'false' })
 
       expect(lockfile_deps_for_spec("chef-config")).to include(
-                                                         ["chef-utils", "= 17.10.70"],
-                                                         ["mixlib-config", "= 2.0.1"])
+                                                         ["chef-utils", "= 17.10.95"],
+                                                         ["mixlib-config", "= 2.1.0"])
     end
   end
 
@@ -216,13 +216,13 @@ RSpec.describe Bundler::Override do
 
         gem 'chef-config', '~> 18.2', '= 18.2.7'
 
-        override 'chef-config', :drop => 'chef-utils', :requirements => {
-          'chef-utils' => '18.2.7',
-          'mixlib-config' => '2.0.0'
-        }
-      G
-
-    bundle("plugin install \"bundler-override\" --local-git #{bundler_override_root}")
+        if Bundler::Plugin.installed?('bundler-override')
+          override 'chef-config', :requirements => {
+            'chef-utils' => '18.2.7',
+            'mixlib-config' => '2.0.0'
+          }
+        end
+    G
     bundle(:update)
 
     expect(lockfile_deps_for_spec("chef-config")).to include(
@@ -234,13 +234,32 @@ RSpec.describe Bundler::Override do
     write_gemfile <<~G
       #{base_gemfile}
         gem 'rails-dom-testing'
-        override 'rails-dom-testing', drop: ['nokogiri']
-      G
-
-    bundle("plugin install \"bundler-override\" --local-git #{bundler_override_root}")
+        if Bundler::Plugin.installed?('bundler-override')
+          override 'rails-dom-testing', drop: ['nokogiri']
+        end
+    G
     bundle(:update)
 
-    puts lockfile_deps_for_spec("rails-dom-testing")
     expect(lockfile_deps_for_spec("rails-dom-testing").to_s).to_not include("nokogiri")
   end
-end
+
+  it "drop takes precedence over overwrite" do
+      write_gemfile <<~G
+        #{base_gemfile}
+
+        gem 'chef-config', '~> 18.2', '>= 18.2.7'
+        gem 'sequel'
+
+          if Bundler::Plugin.installed?('bundler-override')
+            override 'chef-config', :drop => ['chef-utils', 'mixlib-config'],:requirements => {
+              'chef-utils' => '17.10.95',
+              'mixlib-config' => '2.1.0'
+            }
+          end
+      G
+      bundle(:update)
+      expect(lockfile_deps_for_spec("chef-config").to_s).to_not include('chef-utils')
+      expect(lockfile_deps_for_spec("chef-config").to_s).to_not include('mixlib-config')
+    end
+
+  end

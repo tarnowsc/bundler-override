@@ -82,6 +82,8 @@ module Spec
     def write_gemfile(contents)
       contents = "#{coverage_prelude}\n\n#{contents}"
       File.write(app_dir.join("Gemfile"), contents)
+      lockfile_path = app_dir.join("Gemfile.lock")
+      File.delete(lockfile_path) if File.exist?(lockfile_path)
     end
 
     def lockfile
@@ -108,10 +110,15 @@ module Spec
       return command, out, err, process_status
     end
 
-    def bundle(command, expect_error: false, verbose: false, env: {})
+    def bundle(command, expect_error: false, verbose: true, env: {})
       command, @out, @err, @process_status = raw_bundle(command, verbose: verbose, env: env)
+      if verbose
+        puts "\n#{'=' * 80}\n#{command}\n#{'=' * 80}\n#{bundler_output}\n#{'=' * 80}\n"
+        puts "Gemfile.lock:\n#{File.read(app_dir.join("Gemfile.lock"))}" if File.exist?(app_dir.join("Gemfile.lock"))
+        puts "App dir: #{app_dir}"
+      end
       if expect_error
-        expect(@process_status.exitstatus).to_not eq(0), "#{command.inspect} succeeded but was not expected to."
+        expect(@process_status.exitstatus).to_not eq(0), "#{command.inspect} succeeded but was not expected to:\n#{bundler_output}"
       else
         expect(@process_status.exitstatus).to eq(0), "#{command.inspect} failed with:\n#{bundler_output}"
       end
