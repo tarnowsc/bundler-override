@@ -110,6 +110,10 @@ module Spec
       return command, out, err, process_status
     end
 
+    def bundle_set(param, value, verbose: true)
+      raw_bundle("set #{param} #{value}", verbose: verbose)
+    end
+
     def bundle(command, expect_error: false, verbose: true, env: {})
       command, @out, @err, @process_status = raw_bundle(command, verbose: verbose, env: env)
       if verbose
