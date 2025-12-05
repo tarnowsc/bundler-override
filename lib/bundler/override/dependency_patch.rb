@@ -4,14 +4,19 @@ module Bundler
       def self.included(base)
         base.class_eval do
           alias_method :dependencies_orig, :dependencies
+          alias_method :runtime_dependencies_orig, :runtime_dependencies if base.method_defined?(:runtime_dependencies)
 
           def dependencies
-            override_dependencies || []
+            override_dependencies(dependencies_orig) || []
           end
 
-          def override_dependencies
-            deps = dependencies_orig
+          def runtime_dependencies
+            override_dependencies(runtime_dependencies_orig) || []
+          end
+
+          def override_dependencies(deps)
             return deps unless Bundler::Override.override? name
+
             param = Bundler::Override.params(name)
             drop = Array(param[:drop])
             requirements = param[:requirements]

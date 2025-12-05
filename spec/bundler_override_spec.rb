@@ -260,6 +260,25 @@ RSpec.describe Bundler::Override do
       bundle(:update)
       expect(lockfile_deps_for_spec("chef-config").to_s).to_not include('chef-utils')
       expect(lockfile_deps_for_spec("chef-config").to_s).to_not include('mixlib-config')
-    end
-
   end
+
+  it "drops resque's sinatra dependency" do
+    write_gemfile <<~G
+      #{base_gemfile}
+        gem 'resque'
+        if Bundler::Plugin.installed?('bundler-override')
+          override 'resque', drop: ['sinatra']
+        end
+    G
+
+    bundle_set(:deployment, true)
+    bundle(:install)
+    expect(err).to_not include("resque")
+    bundle(:lock)
+    expect(err).to_not include("resque")
+    bundle(:update)
+    expect(err).to_not include("resque")
+
+    expect(lockfile_deps_for_spec("resque").to_s).to_not include("sinatra")
+  end
+end
