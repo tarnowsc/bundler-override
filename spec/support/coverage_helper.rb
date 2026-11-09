@@ -32,12 +32,15 @@ module Spec
         if ENV['CI']
           $LOAD_PATH.concat(#{CoverageHelper.simplecov_dependency_paths.inspect})
           require 'simplecov'
-          SimpleCov.root #{GEM_ROOT.to_s.inspect}
-          SimpleCov.command_name "bundler-override-#{CoverageHelper.coverage_counter += 1}"
-          SimpleCov.formatter SimpleCov::Formatter::SimpleFormatter
-          SimpleCov.start do
-            filters.clear
-            add_filter { |src| !src.filename.include?("/.bundle/plugin/") }
+          unless defined?(Coverage) && Coverage.running?
+            SimpleCov.root #{GEM_ROOT.to_s.inspect}
+            SimpleCov.command_name "bundler-override-#{CoverageHelper.coverage_counter += 1}"
+            SimpleCov.formatter SimpleCov::Formatter::SimpleFormatter
+            SimpleCov.start do
+              cover_filters.clear if respond_to?(:cover_filters)
+              filters.clear
+              send(respond_to?(:skip) ? :skip : :add_filter) { |src| !src.filename.include?("/.bundle/plugin/") }
+            end
           end
         end
       C

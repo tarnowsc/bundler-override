@@ -4,6 +4,8 @@ module Bundler
   module Override
     module DependencyPatch
       def self.included(base)
+        return if base.method_defined?(:dependencies_orig)
+
         base.class_eval do
           alias_method :dependencies_orig, :dependencies
           alias_method :runtime_dependencies_orig, :runtime_dependencies if base.method_defined?(:runtime_dependencies)
@@ -36,21 +38,5 @@ module Bundler
         end
       end
     end
-  end
-end
-
-module Bundler
-  class RemoteSpecification
-    include Override::DependencyPatch
-  end
-
-  class EndpointSpecification
-    include Override::DependencyPatch
-  end
-end
-
-module Gem
-  class Specification
-    include Bundler::Override::DependencyPatch
   end
 end
