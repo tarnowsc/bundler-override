@@ -262,7 +262,23 @@ RSpec.describe Bundler::Override do
     expect(err).to_not include("resque")
     bundle(:update)
     expect(err).to_not include("resque")
+    bundle("exec ruby -e 'puts 1'", verbose: false)
+    expect(err).to be_empty
 
     expect(lockfile_deps_for_spec("resque").to_s).to_not include("sinatra")
+  end
+
+  it "loads cleanly when required before default bundler gem is activated" do
+    script = <<~RUBY
+      Gem.loaded_specs["dummy"] = Gem::Specification.new("dummy", "1.0.0")
+      require File.join(RbConfig::CONFIG["rubylibdir"], "bundler.rb")
+      require #{File.join(bundler_override_root, "lib/bundler-override").inspect}
+    RUBY
+
+    _out, err, status = Spec::Helpers.with_unbundled_env do
+      Open3.capture3(RbConfig.ruby, "-e", script)
+    end
+
+    expect(status.exitstatus).to eq(0), "Expected clean load, got:\n#{err}"
   end
 end
