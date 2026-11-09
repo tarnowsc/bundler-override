@@ -1,32 +1,22 @@
 # frozen_string_literal: true
 
-require_relative "bundler/override/dsl_patch"
+require_relative "bundler/override"
 require_relative "bundler/override/dependency_patch"
-require "bundler/friendly_errors"
+require_relative "bundler/override/dsl_patch"
 
 module Bundler
-  module Override
-    class << self
-      def override?(name)
-        params_map.key?(name)
-      end
+  class RemoteSpecification
+    include Override::DependencyPatch
+  end
 
-      def params(name)
-        params_map[name] || {}
-      end
+  class EndpointSpecification
+    include Override::DependencyPatch
+  end
+end
 
-      def add(name, drop = nil, requirements = nil)
-        return if override?(name)
-
-        params_map[name] = { :name => name, :drop => drop || [], :requirements => requirements }
-      end
-
-      private
-
-      def params_map
-        @params_map ||= {}
-      end
-    end
+module Gem
+  class Specification
+    include Bundler::Override::DependencyPatch
   end
 end
 

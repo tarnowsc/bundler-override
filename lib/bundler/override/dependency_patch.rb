@@ -38,19 +38,3 @@ module Bundler
     end
   end
 end
-
-module Bundler
-  class RemoteSpecification
-    include Override::DependencyPatch
-  end
-
-  class EndpointSpecification
-    include Override::DependencyPatch
-  end
-end
-
-module Gem
-  class Specification
-    include Bundler::Override::DependencyPatch
-  end
-end
