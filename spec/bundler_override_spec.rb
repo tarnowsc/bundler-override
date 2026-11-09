@@ -39,13 +39,13 @@ RSpec.describe Bundler::Override do
     end
 
     it "installs the plugin using: bundle plugin install" do
-      bundle("plugin install \"bundler-override\" --local-git #{bundler_override_root}")
+      bundle("plugin install \"bundler-override\" --git #{bundler_override_root}")
 
       verify_installation
     end
 
     it "installs the plugin using: bundle plugin install verbose" do
-      bundle("plugin install \"bundler-override\" --local-git #{bundler_override_root}", verbose: true)
+      bundle("plugin install \"bundler-override\" --git #{bundler_override_root}", verbose: true)
 
       verify_installation
     end
@@ -71,7 +71,7 @@ RSpec.describe Bundler::Override do
     end
 
     it "installs the plugin using: bundle plugin install" do
-      bundle("plugin install \"bundler-override\" --local-git #{bundler_override_root}")
+      bundle("plugin install \"bundler-override\" --git #{bundler_override_root}")
 
       verify_installation
     end
@@ -154,14 +154,7 @@ RSpec.describe Bundler::Override do
     end
 
     it "with ENV['RAILS_ENV'] = 'production'" do
-      bundle(:update,env: { "RAILS_ENV" => "production" })
-
-      expect(lockfile_deps_for_spec("chef-config")).to include(["chef-utils", "= 17.10.95"])
-    end
-
-    it "with ENV['RAILS_ENV'] = 'production' and the Bundler::Setting false" do
-      env_var = "BUNDLE_BUNDLER_INJECT__DISABLE_WARN_OVERRIDE_GEM"
-      bundle(:update, env: { "RAILS_ENV" => "production", env_var => 'false' })
+      bundle(:update, env: { "RAILS_ENV" => "production" })
 
       expect(lockfile_deps_for_spec("chef-config")).to include(["chef-utils", "= 17.10.95"])
     end
@@ -193,16 +186,7 @@ RSpec.describe Bundler::Override do
     end
 
     it "with ENV['RAILS_ENV'] = 'production'" do
-      bundle(:update,env: { "RAILS_ENV" => "production" })
-
-      expect(lockfile_deps_for_spec("chef-config")).to include(
-                                                         ["chef-utils", "= 17.10.95"],
-                                                         ["mixlib-config", "= 2.1.0"])
-    end
-
-    it "with ENV['RAILS_ENV'] = 'production' and the Bundler::Setting false" do
-      env_var = "BUNDLE_BUNDLER_INJECT__DISABLE_WARN_OVERRIDE_GEM"
-      bundle(:update, env: { "RAILS_ENV" => "production", env_var => 'false' })
+      bundle(:update, env: { "RAILS_ENV" => "production" })
 
       expect(lockfile_deps_for_spec("chef-config")).to include(
                                                          ["chef-utils", "= 17.10.95"],

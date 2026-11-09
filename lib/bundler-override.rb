@@ -1,29 +1,30 @@
 # frozen_string_literal: true
-require "set"
+
 require_relative "bundler/override/dsl_patch"
 require_relative "bundler/override/dependency_patch"
-require "bundler/friendly_errors.rb"
+require "bundler/friendly_errors"
 
 module Bundler
   module Override
     class << self
       def override?(name)
-        return unless @gems
-        @gems.include? name
+        params_map.key?(name)
       end
 
       def params(name)
-        return [] unless @gems
-        return [] unless @gems.include? name
-        @params.find { |o| o[:name] == name }
+        params_map[name] || {}
       end
 
-      def add(name, drop, requirements)
-        @gems = Set.new unless @gems
-        return if @gems.include? name
-        @gems << name
-        @params = Array.new unless @params
-        @params << { :name => name, :drop => drop || [], :requirements => requirements }
+      def add(name, drop = nil, requirements = nil)
+        return if override?(name)
+
+        params_map[name] = { :name => name, :drop => drop || [], :requirements => requirements }
+      end
+
+      private
+
+      def params_map
+        @params_map ||= {}
       end
     end
   end

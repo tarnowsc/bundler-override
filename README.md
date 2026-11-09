@@ -5,7 +5,7 @@ It can be helpful in situation when a developer needs to use some other dependen
 
 ## Requirements
 
-_Ruby_ >= 3.0 and _Bundler_ >= 2.3.x are required. For detailed compatibility matrix please refer to [test pipeline versions configuration](https://github.com/tarnowsc/bundler-override/blob/main/.github/workflows/ruby.yml#L24).
+_Ruby_ >= 3.3 and _Bundler_ >= 2.5.x are required. For detailed compatibility matrix please refer to [test pipeline versions configuration](https://github.com/tarnowsc/bundler-override/blob/main/.github/workflows/ruby.yml#L24).
 
 ## Installation
 
@@ -22,7 +22,7 @@ bundle plugin install "bundler-override"
 Set proper path in place of _'PATH-TO-THE-FOLDER-WITH-PLUGIN'_ and run from terminal in your project folder:
 
 ~~~console
-bundle plugin install "bundler-override" --local-git PATH-TO-THE-FOLDER-WITH-PLUGIN/bundler-override/
+bundle plugin install "bundler-override" --git PATH-TO-THE-FOLDER-WITH-PLUGIN/bundler-override/
 ~~~
 
 ## Usage
