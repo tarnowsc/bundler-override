@@ -7,4 +7,5 @@
 /spec/reports/
 /tmp/
 /.idea/
+/.openidea/
 .rspec_status

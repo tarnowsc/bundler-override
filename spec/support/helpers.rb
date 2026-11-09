@@ -8,7 +8,7 @@ module Spec
         versions = with_unbundled_env do
           `gem list bundler`.lines.grep(/^bundler /).first.scan(/\d+\.\d+\.\d+/)
         end
-        versions.reject { |v| v < "2" }
+        versions.reject { |v| Gem::Version.new(v) < Gem::Version.new("2") }
       end
     end
 
@@ -64,19 +64,6 @@ module Spec
       return unless @app_dir
       FileUtils.rm_rf(@app_dir)
       @app_dir = nil
-    end
-
-    def with_path_based_gem(source_repo)
-      Dir.mktmpdir do |path|
-        path = Pathname.new(path)
-        Dir.chdir(path) do
-          out, status = Open3.capture2e("git clone --depth 1 #{source_repo} the_gem")
-          raise "An error occured while cloning #{source_repo.inspect}...\n#{out}" unless status.exitstatus == 0
-        end
-        path = path.join("the_gem")
-
-        yield path
-      end
     end
 
     def write_gemfile(contents)

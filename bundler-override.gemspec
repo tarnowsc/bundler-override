@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.name = "bundler-override"
   spec.version = Bundler::Override::VERSION
   spec.authors = ["Cezary Tarnowski", "Tomasz Wojcik", "Marek Jakubowski"]
-  spec.email = ["non-exiting@email.dont.use"]
+  spec.email = ["non-existing@email.dont.use"]
 
   spec.summary = "This bundler plugin allows to change dependencies for a gem. It can be helpful in situation when a developer needs to use some other dependency than default for the gem. For usage details, please see: https://github.com/tarnowsc/bundler-override#usage"
   spec.homepage = "https://github.com/tarnowsc/bundler-override"
@@ -24,7 +24,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir.chdir(__dir__) do
     `git ls-files -z`.split("\x0").reject do |f|
       (File.expand_path(f) == __FILE__) ||
-        f.start_with?(*%w[bin/ test/ spec/ features/ .git .circleci appveyor Gemfile])
+        f.start_with?(*%w[bin/ test/ spec/ features/ sig/ .git .circleci appveyor Gemfile .rspec])
     end
   end
   spec.bindir = "exe"

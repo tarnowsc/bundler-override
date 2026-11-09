@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Bundler
   module Override
     module DependencyPatch
@@ -15,16 +17,16 @@ module Bundler
           end
 
           def override_dependencies(deps)
-            return deps unless Bundler::Override.override? name
+            return deps unless deps && Bundler::Override.override?(name)
 
             param = Bundler::Override.params(name)
             drop = Array(param[:drop])
             requirements = param[:requirements]
             if requirements && !requirements.empty?
-              requirements.each do |name, requirement|
-                existing = deps.find { |d| d.name == name }
-                deps.delete_if { |d| d.name == name }
-                deps << Gem::Dependency.new(name, requirement, existing&.type || :runtime)
+              requirements.each do |dep_name, requirement|
+                existing = deps.find { |d| d.name == dep_name }
+                deps.delete_if { |d| d.name == dep_name }
+                deps << Gem::Dependency.new(dep_name, requirement, existing&.type || :runtime)
               end
             end
             deps.delete_if { |d| drop.include? d.name }

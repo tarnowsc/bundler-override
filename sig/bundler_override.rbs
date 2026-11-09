@@ -1,4 +1,9 @@
-module BundlerOverride
-  VERSION: String
-  # See the writing guide of rbs: https://github.com/ruby/rbs#guides
+module Bundler
+  module Override
+    VERSION: String
+
+    def self.override?: (String name) -> bool
+    def self.params: (String name) -> Hash[Symbol, untyped]
+    def self.add: (String name, ?(String | Array[String] | nil) drop, ?Hash[String, String]? requirements) -> void
+  end
 end

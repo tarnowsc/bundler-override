@@ -10,6 +10,8 @@ module Spec
 
     def self.fix_coverage_resultset_paths
       file = GEM_ROOT.join("coverage/.resultset.json")
+      return unless file.exist?
+
       contents = File.read(file)
       contents.gsub!(%r{(?<=").+/\.bundle/plugin/bundler/gems/bundler-override-\h+}, GEM_ROOT.to_s)
       File.write(file, contents)
