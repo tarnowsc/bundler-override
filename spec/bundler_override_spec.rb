@@ -281,4 +281,112 @@ RSpec.describe Bundler::Override do
 
     expect(status.exitstatus).to eq(0), "Expected clean load, got:\n#{err}"
   end
+
+  describe "unit behavior" do
+    after do
+      Bundler::Override.instance_variable_set(:@params_map, nil)
+    end
+
+    describe ".add, .override?, and .params" do
+      it "returns false and empty hash for unknown gems" do
+        expect(Bundler::Override.override?("unknown")).to be(false)
+        expect(Bundler::Override.params("unknown")).to eq({})
+      end
+
+      it "registers a gem with default drop and nil requirements" do
+        Bundler::Override.add("foo")
+
+        expect(Bundler::Override.override?("foo")).to be(true)
+        expect(Bundler::Override.params("foo")).to eq(:name => "foo", :drop => [], :requirements => nil)
+      end
+
+      it "ignores duplicate registrations for the same gem" do
+        Bundler::Override.add("foo", ["bar"], { "baz" => "1.0.0" })
+        Bundler::Override.add("foo", ["other"], { "baz" => "2.0.0" })
+
+        expect(Bundler::Override.params("foo")).to eq(
+          :name => "foo",
+          :drop => ["bar"],
+          :requirements => { "baz" => "1.0.0" }
+        )
+      end
+    end
+
+    describe Bundler::Override::DslPatch do
+      it "registers overrides via Bundler::Dsl#override with and without options" do
+        dsl = Bundler::Dsl.new
+        dsl.override("gem-a")
+        dsl.override("gem-b", :drop => "dep-1", :requirements => { "dep-2" => "~> 1.0" })
+
+        expect(Bundler::Override.params("gem-a")).to eq(:name => "gem-a", :drop => [], :requirements => nil)
+        expect(Bundler::Override.params("gem-b")).to eq(
+          :name => "gem-b",
+          :drop => "dep-1",
+          :requirements => { "dep-2" => "~> 1.0" }
+        )
+      end
+
+      it "patches already-instantiated Bundler::Dsl objects when loaded" do
+        dsl = Bundler::Dsl.new
+        load File.expand_path("../lib/bundler-override.rb", __dir__)
+
+        expect(dsl.singleton_class.ancestors).to include(Bundler::Override::DslPatch)
+      end
+    end
+
+    describe Bundler::Override::DependencyPatch do
+      let!(:spec) do
+        Gem::Specification.new("my-gem", "1.0.0").tap do |s|
+          s.add_runtime_dependency("runtime-dep", "~> 1.0")
+          s.add_development_dependency("dev-dep", "~> 2.0")
+        end
+      end
+
+      it "leaves dependencies unchanged when gem is not overridden" do
+        expect(spec.dependencies.map(&:name)).to eq(["runtime-dep", "dev-dep"])
+        expect(spec.runtime_dependencies.map(&:name)).to eq(["runtime-dep"])
+      end
+
+      it "drops specified dependencies from both dependencies and runtime_dependencies" do
+        Bundler::Override.add("my-gem", "runtime-dep", nil)
+
+        expect(spec.dependencies.map(&:name)).to eq(["dev-dep"])
+        expect(spec.runtime_dependencies).to be_empty
+      end
+
+      it "replaces existing requirements while preserving dependency type and adds new runtime dependencies" do
+        Bundler::Override.add(
+          "my-gem",
+          nil,
+          { "runtime-dep" => "= 1.5.0", "dev-dep" => "= 2.5.0", "new-dep" => ">= 0.1.0" }
+        )
+
+        deps = spec.dependencies
+        runtime_dep = deps.find { |d| d.name == "runtime-dep" }
+        dev_dep = deps.find { |d| d.name == "dev-dep" }
+        new_dep = deps.find { |d| d.name == "new-dep" }
+
+        expect(runtime_dep.requirement.to_s).to eq("= 1.5.0")
+        expect(runtime_dep.type).to eq(:runtime)
+        expect(dev_dep.requirement.to_s).to eq("= 2.5.0")
+        expect(dev_dep.type).to eq(:development)
+        expect(new_dep.requirement.to_s).to eq(">= 0.1.0")
+        expect(new_dep.type).to eq(:runtime)
+      end
+
+      it "gives drop precedence over requirements" do
+        Bundler::Override.add("my-gem", ["runtime-dep"], { "runtime-dep" => "= 1.5.0" })
+
+        expect(spec.dependencies.map(&:name)).not_to include("runtime-dep")
+      end
+
+      it "returns empty array when original dependencies are nil" do
+        allow(spec).to receive(:dependencies_orig).and_return(nil)
+        allow(spec).to receive(:runtime_dependencies_orig).and_return(nil)
+
+        expect(spec.dependencies).to eq([])
+        expect(spec.runtime_dependencies).to eq([])
+      end
+    end
+  end
 end
