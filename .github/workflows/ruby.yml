@@ -27,11 +27,12 @@ jobs:
           - '3.4'
           - '4.0'
         bundler-version:
-          - '2.4.19'
           - '2.5.4'
+          - '2.5.22'
           - '2.6.0'
           - '2.6.9'
           - '2.7.2'
+          - '4.0.20'
 
     env:
       TEST_BUNDLER_VERSION: ${{ matrix.bundler-version }}

@@ -39,13 +39,13 @@ RSpec.describe Bundler::Override do
     end
 
     it "installs the plugin using: bundle plugin install" do
-      bundle("plugin install \"bundler-override\" --local-git #{bundler_override_root}")
+      bundle("plugin install \"bundler-override\" --git #{bundler_override_root}")
 
       verify_installation
     end
 
     it "installs the plugin using: bundle plugin install verbose" do
-      bundle("plugin install \"bundler-override\" --local-git #{bundler_override_root}", verbose: true)
+      bundle("plugin install \"bundler-override\" --git #{bundler_override_root}", verbose: true)
 
       verify_installation
     end
@@ -71,7 +71,7 @@ RSpec.describe Bundler::Override do
     end
 
     it "installs the plugin using: bundle plugin install" do
-      bundle("plugin install \"bundler-override\" --local-git #{bundler_override_root}")
+      bundle("plugin install \"bundler-override\" --git #{bundler_override_root}")
 
       verify_installation
     end
