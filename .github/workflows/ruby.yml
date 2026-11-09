@@ -23,9 +23,9 @@ jobs:
       fail-fast: false
       matrix:
         ruby-version:
-          - '3.2'
           - '3.3'
           - '3.4'
+          - '4.0'
         bundler-version:
           - '2.4.19'
           - '2.5.4'
